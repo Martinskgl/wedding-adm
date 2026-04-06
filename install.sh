@@ -24,8 +24,8 @@ rm -rf $TEMP
 
 echo "📦 Instalando dependências..."
 
-DEPS="@fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/extension-accelerate bcryptjs class-variance-authority clsx next-auth sonner tailwind-merge"
-DEV_DEPS="@types/bcryptjs"
+DEPS="@fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/client @prisma/extension-accelerate bcryptjs class-variance-authority clsx next-auth sonner tailwind-merge"
+DEV_DEPS="@types/bcryptjs prisma"
 
 # Detectar gerenciador de pacotes
 if [ -f "pnpm-lock.yaml" ]; then
