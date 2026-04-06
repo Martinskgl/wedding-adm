@@ -1,0 +1,59 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  uuid     String @id @default(uuid()) @db.Uuid
+  name     String
+  email    String @unique
+  password String
+  roleId   String @db.Uuid
+  role     Role   @relation(fields: [roleId], references: [uuid])
+}
+
+model Role {
+  uuid  String @id @default(uuid()) @db.Uuid
+  name  String
+  users User[]
+}
+
+model Product {
+  uuid         String        @id @default(uuid()) @db.Uuid
+  name         String
+  description  String?
+  price        Decimal
+  image        String?
+  slug         String        @unique
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Transaction {
+  uuid       String   @id @default(uuid()) @db.Uuid
+  customerId String   @db.Uuid
+  productId  String   @db.Uuid
+  quantity   Int
+  totalPrice Decimal
+  status     String   @default("PENDING") // PENDING | PAID | FAILED | CANCELLED
+  createdAt  DateTime @default(now())
+
+  product  Product  @relation(fields: [productId], references: [uuid])
+  customer Customer @relation(fields: [customerId], references: [uuid])
+
+  @@index([customerId])
+  @@index([productId])
+}
+
+model Customer {
+  uuid         String        @id @default(uuid()) @db.Uuid
+  name         String
+  email        String        @unique
+  transactions Transaction[]
+}
