@@ -6,7 +6,7 @@ TEMP=$(mktemp -d)
 git clone --quiet https://github.com/Martinskgl/wedding-adm.git $TEMP
 
 # Copiar arquivos
-mkdir -p src/app/api src/app/ui src/actions src/services src/views src/components/common src/components/ui src/lib
+mkdir -p src/app/api src/app/ui src/actions src/services src/views src/components/common src/components/ui src/lib prisma
 
 cp -r $TEMP/src/app/admin src/app/
 cp -r $TEMP/src/app/login src/app/
@@ -19,6 +19,7 @@ cp -r $TEMP/src/components/common/* src/components/common/
 cp -r $TEMP/src/components/ui/* src/components/ui/
 cp -r $TEMP/src/lib/* src/lib/
 cp $TEMP/src/auth.config.ts src/
+cp $TEMP/prisma/schema.prisma prisma/
 
 rm -rf $TEMP
 
