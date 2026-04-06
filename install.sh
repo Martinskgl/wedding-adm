@@ -5,6 +5,7 @@ echo "🔧 Instalando painel admin..."
 TEMP=$(mktemp -d)
 git clone --quiet https://github.com/Martinskgl/wedding-adm.git $TEMP
 
+# Copiar arquivos
 mkdir -p src/app/api src/actions src/services src/views src/components/common src/lib
 
 cp -r $TEMP/src/app/admin src/app/
@@ -21,7 +22,35 @@ cp $TEMP/src/auth.config.ts src/
 
 rm -rf $TEMP
 
-echo "✅ Pronto! Adicione no seu .env:"
+echo "📦 Instalando dependências..."
+
+DEPS="@fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/extension-accelerate bcryptjs class-variance-authority clsx next-auth sonner tailwind-merge"
+DEV_DEPS="@types/bcryptjs"
+
+# Detectar gerenciador de pacotes
+if [ -f "pnpm-lock.yaml" ]; then
+  PM="pnpm"
+  pnpm add $DEPS
+  pnpm add -D $DEV_DEPS
+elif [ -f "yarn.lock" ]; then
+  PM="yarn"
+  yarn add $DEPS
+  yarn add -D $DEV_DEPS
+else
+  PM="npm"
+  npm install $DEPS
+  npm install --save-dev $DEV_DEPS
+fi
+
 echo ""
-echo "NEXTAUTH_URL=http://localhost:3000"
-echo "NEXTAUTH_SECRET=rode: openssl rand -base64 32"
+echo "✅ Pronto! Agora faça:"
+echo ""
+echo "1. Adicione no .env:"
+echo "   NEXTAUTH_URL=http://localhost:3000"
+echo "   NEXTAUTH_SECRET=\$(openssl rand -base64 32)"
+echo ""
+echo "2. Rode as migrations:"
+echo "   npx prisma migrate deploy"
+echo ""
+echo "3. Inicie o projeto:"
+echo "   $PM run dev"
