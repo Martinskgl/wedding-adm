@@ -28,7 +28,25 @@ curl -s https://raw.githubusercontent.com/Martinskgl/wedding-adm/main/install.sh
 
 ## Configuração após instalar
 
-### 1. Variáveis de ambiente
+### 1. Instalar dependências necessárias
+
+O painel depende de pacotes que podem não estar no projeto. Instale:
+
+**npm:**
+```bash
+npm install next-auth bcryptjs sonner @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+npm install --save-dev @types/bcryptjs
+```
+
+**pnpm:**
+```bash
+pnpm add next-auth bcryptjs sonner @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+pnpm add -D @types/bcryptjs
+```
+
+---
+
+### 2. Variáveis de ambiente
 
 Adicione no `.env` do projeto:
 
