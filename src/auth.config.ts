@@ -30,10 +30,8 @@ export const authOptions: NextAuthOptions = {
           include: { role: true },
         });
 
-        if (!user) return null;
-
-        const isValid = await compare(password, user.password);
-        if (!isValid) throw new Error("Email ou senha inválidos");
+        const isValid = user ? await compare(password, user.password) : false;
+        if (!user || !isValid) throw new Error("Email ou senha inválidos");
 
         return {
           id: user.uuid,
@@ -44,4 +42,20 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.sub = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub;
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
 };

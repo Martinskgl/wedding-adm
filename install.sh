@@ -6,7 +6,7 @@ TEMP=$(mktemp -d)
 git clone --quiet https://github.com/Martinskgl/wedding-adm.git $TEMP
 
 # Copiar arquivos
-mkdir -p src/app/api src/app/ui src/actions src/services src/views src/components/common src/components/ui src/lib prisma
+mkdir -p src/app/api src/app/ui src/actions src/services src/views src/components/common src/components/ui src/lib src/types prisma
 
 cp -r $TEMP/src/app/admin src/app/
 cp -r $TEMP/src/app/login src/app/
@@ -18,14 +18,20 @@ cp -r $TEMP/src/views/* src/views/
 cp -r $TEMP/src/components/common/* src/components/common/
 cp -r $TEMP/src/components/ui/* src/components/ui/
 cp -r $TEMP/src/lib/* src/lib/
+cp -r $TEMP/src/types/* src/types/
 cp $TEMP/src/auth.config.ts src/
 cp $TEMP/prisma/schema.prisma prisma/
+if [ ! -d prisma/migrations ]; then
+  cp -r $TEMP/prisma/migrations prisma/
+else
+  echo "⚠️  prisma/migrations já existe — migration 0_init do painel não foi copiada."
+fi
 
 rm -rf $TEMP
 
 echo "📦 Instalando dependências..."
 
-DEPS="@fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/client @prisma/extension-accelerate bcryptjs class-variance-authority clsx next-auth sonner tailwind-merge"
+DEPS="@fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/client @prisma/extension-accelerate@^2 bcryptjs class-variance-authority clsx next-auth sonner tailwind-merge"
 DEV_DEPS="@types/bcryptjs prisma"
 
 # Detectar gerenciador de pacotes

@@ -3,10 +3,16 @@ import { Toaster } from "sonner";
 import { Inter } from "next/font/google";
 import AdminSidebarLink from "@/components/common/AdminSidebarLink";
 import SignOutButton from "@/components/common/SignOutButton";
+import { requireAdmin } from "@/lib/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+// Painel sempre renderizado sob demanda: depende da sessão e de dados do banco.
+export const dynamic = "force-dynamic";
+
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  await requireAdmin();
+
   return (
     <div className={`${inter.className} flex flex-col md:flex-row min-h-screen bg-slate-50`}>
 

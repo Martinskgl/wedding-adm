@@ -6,7 +6,7 @@ Painel administrativo reutilizável para sites de casamento. Gerencie produtos (
 
 ## O que está incluído
 
-- Login com autenticação (NextAuth)
+- Login com autenticação (NextAuth) — todo o `/admin` e as actions exigem usuário com role `ADMIN`
 - Dashboard com acesso rápido
 - Produtos — criar, editar, deletar
 - Pedidos — visualizar, alterar status, deletar
@@ -34,14 +34,14 @@ O painel depende de pacotes que podem não estar no projeto. Instale:
 
 **npm:**
 ```bash
-npm install next-auth bcryptjs sonner @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
-npm install --save-dev @types/bcryptjs
+npm install next-auth bcryptjs sonner @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/client @prisma/extension-accelerate@^2 class-variance-authority clsx tailwind-merge
+npm install --save-dev @types/bcryptjs prisma
 ```
 
 **pnpm:**
 ```bash
-pnpm add next-auth bcryptjs sonner @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
-pnpm add -D @types/bcryptjs
+pnpm add next-auth bcryptjs sonner @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @prisma/client @prisma/extension-accelerate@^2 class-variance-authority clsx tailwind-merge
+pnpm add -D @types/bcryptjs prisma
 ```
 
 ---
@@ -57,23 +57,25 @@ NEXTAUTH_SECRET="gere com: openssl rand -base64 32"
 
 > `DATABASE_URL` e `DIRECT_URL` já devem existir no projeto.
 
+> ⚠️ Use `@prisma/extension-accelerate@^2`. A versão 3.x tem tipos incompatíveis com o Prisma 6 e quebra o build.
+
 ---
 
-### 2. Banco de dados
+### 3. Banco de dados
 
-**Se o banco já existe (projeto rodando):**
+**Banco novo (vazio):**
 ```bash
 npx prisma migrate deploy
 ```
 
-**Se é um banco novo:**
+**Banco que já tem as tabelas** (criadas antes com `db push`): marque a migration inicial como aplicada, uma única vez:
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate resolve --applied 0_init
 ```
 
 ---
 
-### 3. Criar usuário admin
+### 4. Criar usuário admin
 
 Abra o Prisma Studio:
 ```bash
@@ -81,7 +83,7 @@ npx prisma studio
 ```
 
 **Passo a passo:**
-1. Crie um registro na tabela **Role** com `name: ADMIN`
+1. Crie um registro na tabela **Role** com `name: ADMIN` (só usuários com esse role acessam o painel)
 2. Crie um registro na tabela **User** com:
    - `name`: seu nome
    - `email`: seu email
@@ -90,12 +92,12 @@ npx prisma studio
 
 > Para gerar o hash da senha, rode no terminal:
 > ```bash
-> node -e "const b = require('bcryptjs'); b.hash('suasenha', 10).then(h => console.log(h))"
+> node -e "require('bcryptjs').hash('suasenha', 10).then(console.log)"
 > ```
 
 ---
 
-### 4. Rodar o projeto
+### 5. Rodar o projeto
 
 ```bash
 npm run dev
@@ -157,8 +159,10 @@ src/
 │       └── input.tsx
 ├── views/admin/Admin.page.tsx  ← dashboard principal
 ├── lib/
+│   ├── auth.ts                 ← requireAdmin(): protege páginas e actions
 │   ├── prisma.ts               ← conexão com banco
 │   └── utils.ts                ← funções utilitárias
+├── types/next-auth.d.ts        ← tipagem do role na sessão
 └── auth.config.ts              ← configuração do NextAuth
 ```
 

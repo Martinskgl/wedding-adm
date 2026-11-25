@@ -2,10 +2,13 @@
 
 import { updateTransactionStatus, deleteTransactionByUuid } from "@/services/transaction/service.transaction";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth";
 
 const VALID_STATUSES = ["PENDING", "PAID", "FAILED", "CANCELLED"];
 
 export async function updateStatus(formData: FormData) {
+  await requireAdmin();
+
   const uuid = formData.get("uuid") as string;
   const status = formData.get("status") as string;
 
@@ -16,6 +19,8 @@ export async function updateStatus(formData: FormData) {
 }
 
 export async function deleteTransaction(formData: FormData) {
+  await requireAdmin();
+
   const uuid = formData.get("uuid") as string;
   if (!uuid) throw new Error("UUID não encontrado");
 
